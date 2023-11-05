@@ -1,5 +1,6 @@
 import pandas as pd
 from dags.logger import logger
+from imblearn.over_sampling import SMOTE
 
 
 class Transform:
@@ -23,3 +24,9 @@ class Transform:
         if 'DOB' in self.data.columns:
             self.data['DOB'] = pd.to_datetime(self.data['DOB'])
         return self.data
+
+    def smote_data(self):
+        ##smote = SMOTE(sampling_strategy='minority')
+        #self.data = smote.fit_resample(self.data)
+        return self.data
+        #X_sm, y_sm = smote.fit_resample(X, y)

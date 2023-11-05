@@ -3,7 +3,7 @@ numpy
 scikit-learn
 mlflow
 boto3
-sqlalchemy
 openpyxl
 pymysql
 pyarrow==10.0.1
+imblearn

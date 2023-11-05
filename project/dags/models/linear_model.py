@@ -21,7 +21,7 @@ class LinearModel:
         predict_proba = self.model.predict_proba(X_test)[:,1]
 
         d = {"F1_score": f1_score(Y_test, predict, pos_label='Cancelled'),
-             "Recall": recall_score(Y_test, predict),
+             "Recall": recall_score(Y_test, predict, pos_label='Cancelled'),
              "Precision": precision_score(Y_test, predict, pos_label='Cancelled'),
              "ROC_AUC": roc_auc_score(Y_test, predict_proba)}
 

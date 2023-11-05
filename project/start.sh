@@ -1,5 +1,6 @@
 mkdir -p ./dags ./logs /dags/archive dags/input_files
 echo "AIRFLOW_UID=$(id -u)
+AWS_ACCESS_KEY_ID=admin
 AWS_SECRET_ACCESS_KEY=sample_key
 AWS_REGION=us-east-1
 AWS_BUCKET_NAME=mlflow

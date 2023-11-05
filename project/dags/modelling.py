@@ -2,23 +2,23 @@ import pandas as pd
 from airflow.utils.dates import days_ago
 from airflow.decorators import dag, task
 
-from dags.config.config import db, input_path, archive_path
-from dags.etl.cleaner import Cleaner
+from config.config import db, input_path, archive_path
+from etl.cleaner import Cleaner
 import os
-from dags.etl.connection import Connection
-from dags.etl.transform import Transform
-from dags.models.linear_model import LinearModel
+from etl.connection import Connection
+from etl.transform import Transform
+from models.linear_model import LinearModel
 from models.logisticreg_model import LogisticRegressionModel
-from dags.etl.splitter import Splitter
-from dags.etl.scaler import Scaler
-from dags.etl.preprocessing import Preprocessing
-from dags.etl.extractdata import ExtractData
+from etl.splitter import Splitter
+from etl.scaler import Scaler
+from etl.preprocessing import Preprocessing
+from etl.extractdata import ExtractData
 import mlflow
 from mlflow.models import infer_signature
 import mlflow.sklearn
 
 d = dict(
-    AIRFLOW_UID="$(id -u)",
+    AIRFLOW_UID="0",
     AWS_ACCESS_KEY_ID="admin",
     AWS_SECRET_ACCESS_KEY="sample_key",
     AWS_REGION="us - east - 1",
@@ -41,7 +41,7 @@ for i in d:
     catchup=False,
     tags=['model'],
 )
-def get_model(debug=True):
+def get_model():
 
     @task()
     def extract_data_from_files() -> list:
@@ -112,56 +112,38 @@ def get_model(debug=True):
     def model_fit(train_data, test_data):
         connect = Connection(db).create_connection()
         train = pd.read_sql_query(f"""Select * from {train_data}""", con=connect)
-
-        # with mlflow.start_run() as run:
-        #     train = pd.read_sql_query(f"""Select * from {train_data}""", con=conn)
-        #     lr = LogisticRegressionModel()
-        #     lr.fit(train.drop(columns=['target']), train['target'])
-        #     test = pd.read_sql_query(f"""Select * from {test_data}""", con=conn)
-        #     preds = lr.prediction(test.drop(columns=['target']))
-        #     signature = infer_signature(train.drop(columns=['target']), preds)
-        #     mlflow.sklearn.log_model(lr, "lr_model", signature=signature, registered_model_name='LinearModel')
-        # signature = infer_signature(iris_train, clf.predict(iris_train))
-        # mlflow.set_tracking_uri('http://mlflow')
-        # experiment_id = mlflow.create_experiment("training experiment_1")
-        # mlflow.set_experiment('experiment')
-
-        mmodel = LinearModel()
+        test = pd.read_sql_query(f"""Select * from {test_data}""", con=connect)
+        transformer = Transform(train)
+        #train=transformer.smote_data()
+        splitter = Splitter()
+        X_train, y_train = splitter.split_x_y(train)
+        X_test, y_test = splitter.split_x_y(test)
+        scaler = Scaler()
+        X_train = scaler.scaling(X_train)
+        X_test = scaler.scaling(X_test)
+        lr = LinearModel()
         with mlflow.start_run():
-            mmodel.fit(train.drop(columns=['target']), train['target'])
-            test = pd.read_sql_query(f"""Select * from {test_data}""", con=connect)
-            preds = mmodel.model.predict(train.drop(columns=['target']))
-            signature = infer_signature(train.drop(columns=['target']), preds)
-            mlflow.sklearn.log_model(mmodel.model, "model", signature=signature, registered_model_name='LinearModel')
+            lr.fit(X_train, y_train)
+            preds = lr.model.predict(X_train)
+            signature = infer_signature(X_train, preds)
+            mlflow.sklearn.log_model(lr.model, "model", signature=signature, registered_model_name='LinearModel')
         return 'LinearModel'
 
     @task()
     def get_metrics(model_name, test_data):
         logged_model = f'models:/{model_name}/None'
         conn = Connection(db).create_connection()
-        # Load model as a PyFuncModel.
         loaded_model = mlflow.sklearn.load_model(logged_model)
-        model = LogisticRegressionModel()
-        model.model = loaded_model
+        lr = LinearModel()
+        lr.model = loaded_model
         test = pd.read_sql_query(f"""Select * from {test_data}""", con=conn)
-        metrics = model.get_metrics(test.drop(columns=['target']), test['target'])
+        metrics = lr.get_metrics(test.drop(columns=['target']), test['target'])
 
         for j in metrics:
             mlflow.log_metric(j, metrics[j])
 
     # @task(multiple_outputs=False)
     # def fit_predict(train_data: str, test_data: str, debug_mode=True) -> dict:
-    #     connect = Connection(db).create_connection()
-    #     train = pd.read_sql_query(f"""Select * from {train_data}""", con=connect)
-    #     test = pd.read_sql_query(f"""Select * from {test_data}""", con=connect)
-    #     splitter = Splitter()
-    #     X_train, y_train = splitter.split_x_y(train)
-    #     X_test, y_test = splitter.split_x_y(test)
-    #     scaler = Scaler()
-    #     X_train = scaler.scaling(X_train)
-    #     X_test = scaler.scaling(X_test)
-    #     model = LinearModel()
-    #     model.fit(X_train, y_train)
     #     if debug_mode:
     #         metrics = model.get_metrics(X_test, y_test)
     #         return metrics
@@ -177,11 +159,8 @@ def get_model(debug=True):
     prep_data = preprocessing(mart_table)
     train_test = train_test_split(prep_data)
     model = model_fit(train_test['train_data'], train_test['test_data'])
-    # result = fit_predict(train_test['train_data'], train_test['test_data'], debug_mode=debug)
     model_mat = model_materialize(model, train_test['test_data'])
-
-
-# get_metrics(model, train_test['test_data'])
+    get_metrics(model, train_test['test_data'])
 
 #
 # FROM python:3.9.13-slim
