@@ -216,3 +216,4 @@ cython_debug/
 .history
 .ionide
 /logs/
+/dags/bikes.db
