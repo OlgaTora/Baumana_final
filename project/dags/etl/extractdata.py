@@ -39,6 +39,7 @@ class ExtractData:
                 data = self.extract_data_sheet(filename, sheet_name=sheet)
                 self.load(data, table_name)
                 tables_list.append(table_name)
+            # remove '#' if work every day with new file
             #shutil.copy(f'{self.input_path}{file}', f'{self.archive_path}{file}.dump')
             #os.remove(f'{self.input_path}{file}')
         logger.info('Create STG tables')

@@ -1,6 +1,5 @@
 import pandas as pd
 from dags.logger import logger
-from imblearn.over_sampling import SMOTE
 
 
 class Transform:
@@ -14,6 +13,7 @@ class Transform:
         return self.data
 
     def transform_dates(self):
+        """Function for transform dates to format datetime and fill N/A"""
         if {'transaction_date', 'product_first_sold_date'}.issubset(self.data.columns):
             most_freq = self.data['product_first_sold_date'].mode()
             self.data['product_first_sold_date'].fillna(most_freq, inplace=True)
@@ -22,11 +22,5 @@ class Transform:
                     pd.to_datetime("1900-01-01") + pd.to_timedelta(self.data['product_first_sold_date'], unit="D"))
             self.data['transaction_date'] = pd.to_datetime(self.data['transaction_date'])
         if 'DOB' in self.data.columns:
-            self.data['DOB'] = pd.to_datetime(self.data['DOB'])
+            self.data['DOB'] = pd.to_datetime(self.data['DOB'], format='mixed')
         return self.data
-
-    def smote_data(self):
-        ##smote = SMOTE(sampling_strategy='minority')
-        #self.data = smote.fit_resample(self.data)
-        return self.data
-        #X_sm, y_sm = smote.fit_resample(X, y)

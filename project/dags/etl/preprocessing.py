@@ -21,6 +21,7 @@ class Preprocessing:
         return self.data
 
     def drop_columns(self):
+        """Function for drop columns"""
         self.data = self.data.drop(
             columns=['first_name',
                      'last_name',
@@ -36,18 +37,16 @@ class Preprocessing:
         return self.data
 
     def update_numeric(self):
+        """Function for fill N/A and transform numeric features to float type"""
         self.data = self.data.fillna(self.data.median(axis=0), axis=0)
         num_features = self.data.select_dtypes(include='number')
         for feature in num_features:
             self.data[feature] = self.data[feature].astype(float)
-
-    #        for n_type in (np.int32, np.int16, np.int8):
-     #           if (self.data[feature] == self.data[feature].astype(n_type)).sum() == len(self.data):
-      #              self.data[feature] = self.data[feature].astype(n_type)
         logger.info('Numeric features transform')
         return self.data
 
     def update_categorical(self):
+        """Function for fill N/A and encoder categorical features"""
         cat_features = self.data.select_dtypes(include='object')
         data_describe = self.data.describe(include=[object])
         for feature in cat_features:

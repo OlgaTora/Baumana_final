@@ -9,6 +9,7 @@ class Scaler:
         self.scaler = MinMaxScaler()
 
     def scaling(self, X):
+        """Function for scaler features"""
         scaled_X = self.scaler.fit_transform(X)
         scaled_data = pd.DataFrame(scaled_X, columns=X.columns)
         logger.info('Data scaled with MinMaxScaler')

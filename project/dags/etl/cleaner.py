@@ -15,16 +15,18 @@ class Cleaner:
         return self.data
 
     def drop_columns(self):
+        """Function for drop columns for future data mart"""
         self.data = self.data.drop(columns=['DOB', 'default_', 'country'], axis=1)
         logger.info('Drop columns for data mart')
         return self.data
 
     def create_age(self):
+        """Function for create new feature - age"""
         data_describe = self.data.describe(include='all')
         most_freq = data_describe['DOB']['top']
         self.data['DOB'].fillna(most_freq, inplace=True)
         self.data['DOB'] = pd.to_datetime(self.data['DOB'])
-        self.data['age'] = (datetime.today() - self.data['DOB'])#.astype('<m8[Y]')
+        self.data['age'] = (datetime.today() - self.data['DOB'])
         logger.info('Create age column')
         return self.data
 
