@@ -13,9 +13,9 @@ sh start.sh
 
 Для проверки работы в режиме добавления данных:
 
-1. в папку project/dags/input_files переместить файл "данные для модуля 2 без 30-12 .xlsx"
-2. запустить localhost:8080
-3. в папку project/dags/input_files переместить файл "30-12-2017.xlsx"
-4. запустить localhost:8080
-5. Раскомментировать строки в project/dags/etl/extractdata.py.
-6. Изменить режим сохранения таблицы в файле modelling.py - create_dwh на "append"
+1. Раскомментировать строки в project/dags/etl/extractdata.py.
+2. Изменить режим сохранения таблицы в файле modelling.py функция create_dwh на "append"
+3. в папку project/dags/input_files переместить файл "данные для модуля 2 без 30-12 .xlsx"
+4. запустить DAG на localhost:8080 
+5. в папку project/dags/input_files переместить файл "30-12-2017.xlsx"
+6. запустить DAG на localhost:8080

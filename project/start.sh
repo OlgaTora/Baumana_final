@@ -1,4 +1,4 @@
-mkdir -p ./dags ./logs /dags/archive dags/input_files
+mkdir -p ./dags ./logs dags/archive
 echo "AIRFLOW_UID=$(id -u)
 AWS_ACCESS_KEY_ID=admin
 AWS_SECRET_ACCESS_KEY=sample_key

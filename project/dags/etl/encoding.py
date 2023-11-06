@@ -10,8 +10,6 @@ class Encoding:
 
     def encoding_data(self, data):
         """Function for encoder categorical features"""
-        data['owns_car'] = data['owns_car'].map(lambda x: 1 if x == 'Yes' else 0)
-        data['deceased_indicator'] = data['deceased_indicator'].map(lambda x: 1 if x == 'Y' else 0)
         data.gender = (data.gender.replace('F', 'Female').
                        replace('Femal', 'Female').
                        replace('M', 'Male').replace('U', 'Unknown'))
