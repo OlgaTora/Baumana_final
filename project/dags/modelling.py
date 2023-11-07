@@ -17,22 +17,22 @@ import mlflow
 from mlflow.models import infer_signature
 import mlflow.sklearn
 
-# d = dict(
-#     AIRFLOW_UID="0",
-#     AWS_ACCESS_KEY_ID="admin",
-#     AWS_SECRET_ACCESS_KEY="sample_key",
-#     AWS_REGION="us - east - 1",
-#     AWS_BUCKET_NAME="mlflow",
-#     MYSQL_DATABASE="mlflow",
-#     MYSQL_USER="mlflow_user",
-#     MYSQL_PASSWORD="mlflow_password",
-#     MYSQL_ROOT_PASSWORD="toor",
-#     MLFLOW_TRACKING_URI='http://mlflow:5001',
-#     MLFLOW_EXPERIMENT_NAME="MyExp",
-#     MLFLOW_S3_ENDPOINT_URL='http://s3:9000'
-# )
-# for i in d:
-#     os.environ[i] = d[i]
+d = dict(
+    AIRFLOW_UID="0",
+    AWS_ACCESS_KEY_ID="admin",
+    AWS_SECRET_ACCESS_KEY="sample_key",
+    AWS_REGION="us - east - 1",
+    AWS_BUCKET_NAME="mlflow",
+    MYSQL_DATABASE="mlflow",
+    MYSQL_USER="mlflow_user",
+    MYSQL_PASSWORD="mlflow_password",
+    MYSQL_ROOT_PASSWORD="toor",
+    MLFLOW_TRACKING_URI='http://mlflow:5001',
+    MLFLOW_EXPERIMENT_NAME="MyExp",
+    MLFLOW_S3_ENDPOINT_URL='http://s3:9000'
+)
+for i in d:
+    os.environ[i] = d[i]
 
 
 @dag(
