@@ -8,6 +8,7 @@ MYSQL_DATABASE=mlflow
 MYSQL_USER=mlflow_user
 MYSQL_PASSWORD=mlflow_password
 MYSQL_ROOT_PASSWORD=toor
+MLFLOW_EXPERIMENT_NAME=MyExp
 MLFLOW_S3_ENDPOINT_URL=http://s3:9000
 MLFLOW_TRACKING_URI=http://mlflow:5001"> .env
 docker-compose up
